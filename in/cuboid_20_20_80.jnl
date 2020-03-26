@@ -1,0 +1,87 @@
+# -*- coding: mbcs -*-
+from part import *
+from material import *
+from section import *
+from assembly import *
+from step import *
+from interaction import *
+from load import *
+from mesh import *
+from optimization import *
+from job import *
+from sketch import *
+from visualization import *
+from connectorBehavior import *
+mdb.ModelFromInputFile(inputFileName='/home/km262911/venv/bin/Job-1.inp', name=
+    'Job-1')
+mdb.meshEditOptions.setValues(enableUndo=True, maxUndoCacheElements=0.5)
+mdb.models['Job-1'].ConstrainedSketch(name='__profile__', sheetSize=200.0)
+mdb.models['Job-1'].sketches['__profile__'].rectangle(point1=(-5.0, 5.0), 
+    point2=(5.0, -5.0))
+mdb.models['Job-1'].Part(dimensionality=THREE_D, name='Part-2', type=
+    DEFORMABLE_BODY)
+mdb.models['Job-1'].parts['Part-2'].BaseSolidExtrude(depth=20.0, sketch=
+    mdb.models['Job-1'].sketches['__profile__'])
+del mdb.models['Job-1'].sketches['__profile__']
+del mdb.models['Job-1'].parts['PART-1']
+mdb.models['Job-1'].parts['Part-2'].seedPart(deviationFactor=0.1, 
+    minSizeFactor=0.1, size=1.0)
+mdb.models['Job-1'].parts['Part-2'].seedPart(deviationFactor=0.1, 
+    minSizeFactor=0.1, size=0.5)
+mdb.models['Job-1'].parts['Part-2'].generateMesh()
+mdb.models['Job-1'].rootAssembly.regenerate()
+#* FeatureError: Regeneration failed
+del mdb.models['Job-1'].rootAssembly.features['PART-1-1']
+mdb.models['Job-1'].rootAssembly.Instance(dependent=ON, name='Part-2-1', part=
+    mdb.models['Job-1'].parts['Part-2'])
+# Save by km262911 on 2020_03_16-14.35.57; build 2019 2018_09_24-20.41.51 157541
+from part import *
+from material import *
+from section import *
+from assembly import *
+from step import *
+from interaction import *
+from load import *
+from mesh import *
+from optimization import *
+from job import *
+from sketch import *
+from visualization import *
+from connectorBehavior import *
+mdb.Job(activateLoadBalancing=False, atTime=None, contactPrint=OFF, 
+    description='', echoPrint=OFF, explicitPrecision=SINGLE, 
+    getMemoryFromAnalysis=True, historyPrint=OFF, memory=90, memoryUnits=
+    PERCENTAGE, model='Job-1', modelPrint=OFF, multiprocessingMode=DEFAULT, 
+    name='cuboid_20_20_80', nodalOutputPrecision=SINGLE, numCpus=1, numDomains=
+    1, numGPUs=0, parallelizationMethodExplicit=DOMAIN, queue=None, 
+    resultsFormat=ODB, scratch='', type=ANALYSIS, userSubroutine='', waitHours=
+    0, waitMinutes=0)
+mdb.models['Job-1'].parts['Part-2'].deleteMesh()
+mdb.models['Job-1'].parts['Part-2'].seedPart(deviationFactor=0.1, 
+    minSizeFactor=0.1, size=1.0)
+mdb.models['Job-1'].parts['Part-2'].generateMesh()
+mdb.models['Job-1'].rootAssembly.regenerate()
+mdb.Job(activateLoadBalancing=False, atTime=None, contactPrint=OFF, 
+    description='', echoPrint=OFF, explicitPrecision=SINGLE, 
+    getMemoryFromAnalysis=True, historyPrint=OFF, memory=90, memoryUnits=
+    PERCENTAGE, model='Job-1', modelPrint=OFF, multiprocessingMode=DEFAULT, 
+    name='cuboid_10_10_20', nodalOutputPrecision=SINGLE, numCpus=1, numDomains=
+    1, numGPUs=0, parallelizationMethodExplicit=DOMAIN, queue=None, 
+    resultsFormat=ODB, scratch='', type=ANALYSIS, userSubroutine='', waitHours=
+    0, waitMinutes=0)
+# Save by km262911 on 2020_03_19-15.40.04; build 2019 2018_09_24-20.41.51 157541
+from part import *
+from material import *
+from section import *
+from assembly import *
+from step import *
+from interaction import *
+from load import *
+from mesh import *
+from optimization import *
+from job import *
+from sketch import *
+from visualization import *
+from connectorBehavior import *
+mdb.models['Job-1'].rootAssembly.features['Datum csys-1'].suppress()
+# Save by km262911 on 2020_03_19-19.23.03; build 2019 2018_09_24-20.41.51 157541
