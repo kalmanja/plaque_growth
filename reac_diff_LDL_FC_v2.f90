@@ -141,7 +141,7 @@ program reac_diffuse
     print*,'--------------------------'
     
   ! Apply Dirichlet BC
-    c_LDL_current(BC_nodes) = 1.d0
+    c_LDL_current(BC_nodes) = 0.01d0
 
     A_global = 0.d0
     K_LDL_global = 0.d0
@@ -184,8 +184,8 @@ program reac_diffuse
         call shape_func_deriv3D(quadrature(i,1),quadrature(i,2),quadrature(i,3),invJac,B)
 
       ! Calculate K_e = B^T.D.B  
-        K_e_LDL = K_e_LDL + del_t*diff_coeff_LDL*matmul(B,transpose(B))*detJac*quadrature(i,4)
-        K_e_FC = K_e_FC + del_t*diff_coeff_FC*matmul(B,transpose(B))*detJac*quadrature(i,4)
+        K_e_LDL = K_e_LDL + matmul(B,transpose(B))*detJac*quadrature(i,4)
+        K_e_FC = K_e_FC + matmul(B,transpose(B))*detJac*quadrature(i,4)
 
       ! Calculate R_e = - d_i * A_e - gamma_LDL*(A_e - c_LDL_thresh)
         c_LDL_gp = 0.d0
@@ -207,8 +207,8 @@ program reac_diffuse
       ! print*,'Assembling system matrices: Percentage complete = ',percentage_assembly    
     end do
     
-    E_global_LDL = (1.d0 - del_t*degradation_rate_LDL)*A_global + del_t*K_LDL_global
-    E_global_FC = A_global + K_FC_global
+    E_global_LDL = (1.d0 - del_t*degradation_rate_LDL)*A_global + del_t*diff_coeff_LDL*K_LDL_global
+    E_global_FC = A_global + del_t*diff_coeff_FC*K_FC_global
 
   ! Update current concentrations
     A_free = A_global(free_dofs,free_dofs)
