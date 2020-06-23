@@ -4,7 +4,7 @@
         
       contains
 
-      subroutine read_mesh_data(prefix,element_node,node_x)
+      subroutine read_mesh_data(prefix,element_node,node_x,bc_faces)
       !*****************************************************************************80
       !
       !! MAIN is the main program for FEM_TO_GMSH.
@@ -45,12 +45,12 @@
       !
         implicit none    
         character ( len = 255 ) :: element_filename = ''
-        integer ( kind = 4 ), allocatable, dimension ( :, : ) :: element_node
+        integer ( kind = 4 ), allocatable, dimension ( :, : ) :: element_node,bc_faces
         integer ( kind = 4 ) element_num
-        integer ( kind = 4 ) element_order
+        integer ( kind = 4 ) element_order,bc_face_order
         integer ( kind = 4 ) m
-        character ( len = 255 ) :: node_filename = ''
-        integer ( kind = 4 ) node_num
+        character ( len = 255 ) :: node_filename = '',bc_face_filename = ''
+        integer ( kind = 4 ) node_num,bc_face_num
         real ( kind = 8 ), allocatable, dimension ( :, : ) :: node_x
         character ( len = 255 ) prefix
         character ( len = 255 ) shape_func_order
@@ -61,6 +61,7 @@
       !
         node_filename = trim ( prefix ) // '_nodes.txt'
         element_filename = trim ( prefix ) // '_elements.txt'
+        bc_face_filename = trim ( prefix ) // '_bcfaces.txt'
       !
       !  Read the node data.
       !
@@ -90,6 +91,17 @@
       
         call i4mat_data_read ( element_filename, element_order, element_num, &
           element_node )
+
+        call i4mat_header_read ( bc_face_filename, bc_face_order, bc_face_num )
+
+        write ( *, '(a)' ) ' '
+        write ( *, '(a,i8)' ) '  Number of BC faces = ', bc_face_num
+
+        allocate ( bc_faces(1:bc_face_order,1:bc_face_num) )
+        print*,bc_face_order,bc_face_num
+        pause
+        call i4mat_data_read ( bc_face_filename, bc_face_order, bc_face_num, &
+          bc_faces )
 
         return  
 

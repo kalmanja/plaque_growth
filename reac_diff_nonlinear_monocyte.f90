@@ -16,7 +16,7 @@ program reac_diff_nonlinear
 
   character ( len = 255 ) prefix
   DOUBLE PRECISION, ALLOCATABLE :: node_x(:,:)
-  INTEGER, ALLOCATABLE :: element_node(:,:)
+  INTEGER, ALLOCATABLE :: element_node(:,:),bc_face(:,:)
   integer :: nqp, i, j, k, ne, node_set(8), n_s, nsteps, n_BC 
   integer, allocatable :: BC_nodes(:), BC_toggle(:)
   DOUBLE PRECISION, ALLOCATABLE :: quadrature(:,:)
@@ -39,8 +39,8 @@ program reac_diff_nonlinear
   !INTEGER :: n_constituents
 
 ! Mesh input  
-  prefix = 'in/5' ! file names would be 'prefix'_nodes.txt and 'prefix'_elements.txt 
-  call read_mesh_data(prefix,element_node,node_x)
+  prefix = 'in/cube_circBC' ! file names would be 'prefix'_nodes.txt and 'prefix'_elements.txt 
+  call read_mesh_data(prefix,element_node,node_x,bc_face)
 
   ALLOCATE(A_global(1:size(node_x,2),1:size(node_x,2)))
   ALLOCATE(K_global(1:size(node_x,2),1:size(node_x,2)))
@@ -98,9 +98,6 @@ program reac_diff_nonlinear
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !                                Nonlinear systems - monocytes
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  
-
-  ALLOCATE(c_mono_current(1:size(node_x,2)))
-  ALLOCATE(c_mono_iter(1:size(node_x,2)))
 
   ! Time step incrementation
   del_t = 0.0001d0
