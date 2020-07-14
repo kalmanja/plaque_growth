@@ -68,8 +68,8 @@ program reac_diff_nonlinear
   mono_d = 2.572d0
   d_mono = 1.15e-6
   diffusion_mono  = 8e-15
-  c_LDL_ox = 0.1d0
-  c_mono_thresh = 550e9
+  !c_LDL_ox = 0.1d0
+  !c_mono_thresh = 550e9
 
 ! Gauss-Legendre quadrature
   nqp = 2 ! Quadrature points along one direction
