@@ -98,8 +98,8 @@
         write ( *, '(a,i8)' ) '  Number of BC faces = ', bc_face_num
 
         allocate ( bc_faces(1:bc_face_order,1:bc_face_num) )
-        print*,bc_face_order,bc_face_num
-        pause
+        !print*,bc_face_order,bc_face_num
+        
         call i4mat_data_read ( bc_face_filename, bc_face_order, bc_face_num, &
           bc_faces )
 
@@ -1628,6 +1628,7 @@
       !
         if ( ihave == 1 .or. ihave == 2 .or. ihave == 6 .or. ihave == 7 ) then
           ierror = ihave
+          
           write ( *, '(a)' ) ' '
           write ( *, '(a)' ) 'S_TO_R8 - Serious error!'
           write ( *, '(a)' ) '  Illegal or nonnumeric input:'

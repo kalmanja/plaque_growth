@@ -1,0 +1,14 @@
+$
+$ Extra Data for ABAQUS from /home/km262911/IFAM_local/01_Drug_Eluting_Heart_Stents/10_Soft_tissue_modeling/01_Codes/plaque_growth/plaque_growth/in/nonlinear_reac_diff3.inp using /opt/soft/hyperworks/2017/altair/io/model_readers/feinput/bin/linux64/abaqus.
+$ File Input to HyperMesh on 06-24-2020 01:04:32.
+$
+** File: /home/km262911/IFAM_local/01_Drug_Eluting_Heart_Stents/10_Soft_tissue_modeling/01_Codes/plaque_growth/plaque_growth/in/nonlinear_reac_diff3.inp has invalid information.  Relevant line number, information and datalines are written out subsequently
+*Part, name=Part-1
+** Line: 4724 -- Some Options in the Keyword listed below are currently unsupported
+*Elset, elset=_Surf-1_S1, internal, generate
+*End Part
+*Assembly, name=Assembly
+*Instance, name=Part-1-1, part=Part-1
+*End Instance
+*End Assembly
+

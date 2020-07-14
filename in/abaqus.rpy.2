@@ -1,0 +1,147 @@
+# -*- coding: mbcs -*-
+#
+# Abaqus/CAE Release 2019 replay file
+# Internal Version: 2018_09_24-20.41.51 157541
+# Run by km262911 on Tue Jun 23 22:20:28 2020
+#
+
+# from driverUtils import executeOnCaeGraphicsStartup
+# executeOnCaeGraphicsStartup()
+#: Executing "onCaeGraphicsStartup()" in the site directory ...
+from abaqus import *
+from abaqusConstants import *
+session.Viewport(name='Viewport: 1', origin=(0.0, 0.0), width=82.9411468505859, 
+    height=73.6699981689453)
+session.viewports['Viewport: 1'].makeCurrent()
+session.viewports['Viewport: 1'].maximize()
+from caeModules import *
+from driverUtils import executeOnCaeStartup
+executeOnCaeStartup()
+session.viewports['Viewport: 1'].partDisplay.geometryOptions.setValues(
+    referenceRepresentation=ON)
+openMdb(
+    pathName='/home/km262911/IFAM_local/01_Drug_Eluting_Heart_Stents/10_Soft_tissue_modeling/01_Codes/plaque_growth/plaque_growth/in/cuboid_circular_inlet.cae')
+#: The model database "/home/km262911/IFAM_local/01_Drug_Eluting_Heart_Stents/10_Soft_tissue_modeling/01_Codes/plaque_growth/plaque_growth/in/cuboid_circular_inlet.cae" has been opened.
+session.viewports['Viewport: 1'].setValues(displayedObject=None)
+p = mdb.models['Model-1'].parts['Part-1']
+session.viewports['Viewport: 1'].setValues(displayedObject=p)
+session.viewports['Viewport: 1'].partDisplay.setValues(mesh=ON)
+session.viewports['Viewport: 1'].partDisplay.meshOptions.setValues(
+    meshTechnique=ON)
+session.viewports['Viewport: 1'].partDisplay.geometryOptions.setValues(
+    referenceRepresentation=OFF)
+session.viewports['Viewport: 1'].partDisplay.setValues(mesh=OFF)
+session.viewports['Viewport: 1'].partDisplay.meshOptions.setValues(
+    meshTechnique=OFF)
+session.viewports['Viewport: 1'].partDisplay.geometryOptions.setValues(
+    referenceRepresentation=ON)
+a = mdb.models['Model-1'].rootAssembly
+session.viewports['Viewport: 1'].setValues(displayedObject=a)
+session.viewports['Viewport: 1'].assemblyDisplay.setValues(loads=ON, bcs=ON, 
+    predefinedFields=ON, connectors=ON, optimizationTasks=OFF, 
+    geometricRestrictions=OFF, stopConditions=OFF)
+session.viewports['Viewport: 1'].assemblyDisplay.setValues(mesh=ON, loads=OFF, 
+    bcs=OFF, predefinedFields=OFF, connectors=OFF)
+session.viewports['Viewport: 1'].assemblyDisplay.meshOptions.setValues(
+    meshTechnique=ON)
+p1 = mdb.models['Model-1'].parts['Part-1']
+session.viewports['Viewport: 1'].setValues(displayedObject=p1)
+session.viewports['Viewport: 1'].partDisplay.setValues(mesh=ON)
+session.viewports['Viewport: 1'].partDisplay.meshOptions.setValues(
+    meshTechnique=ON)
+session.viewports['Viewport: 1'].partDisplay.geometryOptions.setValues(
+    referenceRepresentation=OFF)
+p = mdb.models['Model-1'].parts['Part-1']
+p.deleteMesh()
+p = mdb.models['Model-1'].parts['Part-1']
+e = p.edges
+pickedEdges = e.getSequenceFromMask(mask=('[#7986 ]', ), )
+p.seedEdgeByNumber(edges=pickedEdges, number=4, constraint=FINER)
+p = mdb.models['Model-1'].parts['Part-1']
+e = p.edges
+pickedEdges = e.getSequenceFromMask(mask=('[#8430 ]', ), )
+p.seedEdgeByNumber(edges=pickedEdges, number=8, constraint=FINER)
+p = mdb.models['Model-1'].parts['Part-1']
+p.generateMesh()
+session.viewports['Viewport: 1'].view.setValues(nearPlane=145.316, 
+    farPlane=268.14, width=114.603, height=69.2638, cameraPosition=(42.5048, 
+    112.46, 193.195), cameraUpVector=(-0.285412, 0.596534, -0.750124), 
+    cameraTarget=(1.42411, -2.12051, 25.6964))
+session.viewports['Viewport: 1'].view.setValues(nearPlane=143.102, 
+    farPlane=271.389, width=112.857, height=68.2086, cameraPosition=(92.5124, 
+    92.1439, 185.96), cameraUpVector=(-0.2931, 0.685153, -0.666827), 
+    cameraTarget=(1.34482, -2.0883, 25.7079))
+session.viewports['Viewport: 1'].view.setValues(nearPlane=146.605, 
+    farPlane=268.766, width=115.62, height=69.8783, cameraPosition=(97.339, 
+    56.4679, 199.575), cameraUpVector=(-0.229044, 0.808009, -0.542826), 
+    cameraTarget=(1.34924, -2.12094, 25.7204))
+mdb.save()
+#: The model database has been saved to "/home/km262911/IFAM_local/01_Drug_Eluting_Heart_Stents/10_Soft_tissue_modeling/01_Codes/plaque_growth/plaque_growth/in/cuboid_circular_inlet.cae".
+a = mdb.models['Model-1'].rootAssembly
+a.regenerate()
+session.viewports['Viewport: 1'].setValues(displayedObject=a)
+session.viewports['Viewport: 1'].assemblyDisplay.setValues(mesh=OFF)
+session.viewports['Viewport: 1'].assemblyDisplay.meshOptions.setValues(
+    meshTechnique=OFF)
+mdb.jobs.changeKey(fromName='nonlinear_reac_diff', 
+    toName='nonlinear_reac_diff2')
+import os
+os.chdir(
+    r"/home/km262911/IFAM_local/01_Drug_Eluting_Heart_Stents/10_Soft_tissue_modeling/01_Codes/plaque_growth/plaque_growth/in")
+mdb.jobs['nonlinear_reac_diff2'].writeInput(consistencyChecking=OFF)
+#: The job input file has been written to "nonlinear_reac_diff2.inp".
+session.viewports['Viewport: 1'].assemblyDisplay.setValues(mesh=ON)
+session.viewports['Viewport: 1'].assemblyDisplay.meshOptions.setValues(
+    meshTechnique=ON)
+#: Coordinates of node 105 :0.,0.,50.
+p1 = mdb.models['Model-1'].parts['Part-1']
+session.viewports['Viewport: 1'].setValues(displayedObject=p1)
+p = mdb.models['Model-1'].parts['Part-1']
+p.deleteMesh()
+p = mdb.models['Model-1'].parts['Part-1']
+e = p.edges
+pickedEdges = e.getSequenceFromMask(mask=('[#7986 ]', ), )
+p.seedEdgeByNumber(edges=pickedEdges, number=8, constraint=FINER)
+p = mdb.models['Model-1'].parts['Part-1']
+e = p.edges
+pickedEdges = e.getSequenceFromMask(mask=('[#8430 ]', ), )
+p.seedEdgeByNumber(edges=pickedEdges, number=16, constraint=FINER)
+p = mdb.models['Model-1'].parts['Part-1']
+p.generateMesh()
+mdb.save()
+#: The model database has been saved to "/home/km262911/IFAM_local/01_Drug_Eluting_Heart_Stents/10_Soft_tissue_modeling/01_Codes/plaque_growth/plaque_growth/in/cuboid_circular_inlet.cae".
+a = mdb.models['Model-1'].rootAssembly
+a.regenerate()
+session.viewports['Viewport: 1'].setValues(displayedObject=a)
+session.viewports['Viewport: 1'].assemblyDisplay.setValues(mesh=OFF)
+session.viewports['Viewport: 1'].assemblyDisplay.meshOptions.setValues(
+    meshTechnique=OFF)
+mdb.jobs.changeKey(fromName='nonlinear_reac_diff2', 
+    toName='nonlinear_reac_diff3')
+mdb.jobs['nonlinear_reac_diff3'].writeInput(consistencyChecking=OFF)
+#: The job input file has been written to "nonlinear_reac_diff3.inp".
+session.viewports['Viewport: 1'].assemblyDisplay.setValues(mesh=ON)
+session.viewports['Viewport: 1'].assemblyDisplay.meshOptions.setValues(
+    meshTechnique=ON)
+p1 = mdb.models['Model-1'].parts['Part-1']
+session.viewports['Viewport: 1'].setValues(displayedObject=p1)
+p = mdb.models['Model-1'].parts['Part-1']
+p.deleteMesh()
+p = mdb.models['Model-1'].parts['Part-1']
+e = p.edges
+pickedEdges = e.getSequenceFromMask(mask=('[#7986 ]', ), )
+p.seedEdgeByNumber(edges=pickedEdges, number=5, constraint=FINER)
+p = mdb.models['Model-1'].parts['Part-1']
+e = p.edges
+pickedEdges = e.getSequenceFromMask(mask=('[#8430 ]', ), )
+p.seedEdgeByNumber(edges=pickedEdges, number=10, constraint=FINER)
+p = mdb.models['Model-1'].parts['Part-1']
+p.generateMesh()
+a = mdb.models['Model-1'].rootAssembly
+a.regenerate()
+session.viewports['Viewport: 1'].setValues(displayedObject=a)
+session.viewports['Viewport: 1'].assemblyDisplay.setValues(mesh=OFF)
+session.viewports['Viewport: 1'].assemblyDisplay.meshOptions.setValues(
+    meshTechnique=OFF)
+mdb.jobs['nonlinear_reac_diff3'].writeInput(consistencyChecking=OFF)
+#: The job input file has been written to "nonlinear_reac_diff3.inp".

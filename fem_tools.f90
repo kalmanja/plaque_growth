@@ -4,18 +4,23 @@
 
     contains
 
-    subroutine GaussLegendreQuad(nqp,quadrature)
+    subroutine GaussLegendreQuad(nqp,ndim,quadrature)
 
         implicit none
   
         integer, intent(in) :: nqp
-        integer :: i,j,k,gp
+        integer :: i,j,k,gp,ndim
         double precision :: x(nqp)
         double precision :: w(nqp)
         double precision, intent(out), ALLOCATABLE :: quadrature (:,:)
 
-
+      if (ndim.eq.3) then
         allocate (quadrature(1:nqp**3,4))
+      end if
+
+      if (ndim.eq.2) then
+         allocate (quadrature(1:nqp**2,3))
+      end if
 
     ! 1-D quadrature
         select case (nqp)
@@ -246,6 +251,7 @@
         end select
         
         gp = 0
+      if (ndim.eq.3) then
         do i = 1,nqp
             do j = 1,nqp
                 do k = 1,nqp
@@ -257,6 +263,17 @@
                 end do
             end do
         end do
+      end if
+      if (ndim.eq.2) then
+        do i = 1,nqp
+         do j = 1,nqp
+                 gp = gp + 1
+                 quadrature(gp,1) = x(i)
+                 quadrature(gp,2) = x(j)
+                 quadrature(gp,3) = w(i)*w(j)
+         end do
+        end do
+      end if
 
         return
         end subroutine GaussLegendreQuad   
@@ -286,6 +303,37 @@
 
          return
          end subroutine shape_func_eval3D
+
+         subroutine shape_func_eval2D(xi, eta, N, X_e, detjac)
+         
+            DOUBLE PRECISION, INTENT(IN) :: xi, eta
+            DOUBLE PRECISION :: N(4),N0(4),N_xi(4),N_eta(4)
+            DOUBLE PRECISION :: N_xi_eta(4),X_e(4,3),Jac(2,2),detjac
+            DOUBLE PRECISION :: N_deriv_xi(4),N_deriv_eta(4)
+   
+            N0 = (/1,1,1,1/)
+   
+            N_xi = (/-1,1,1,-1/)
+            N_eta = (/-1,-1,1,1/)
+   
+            N_xi_eta = (/1,-1,1,-1/)
+
+            N = (1.d0/4)*(N0 + xi*N_xi + eta*N_eta + xi*eta*N_xi_eta)
+
+            N_deriv_xi = (1.d0/4)*N_xi
+            N_deriv_eta = (1.d0/4)*N_eta
+
+            Jac(1,1) = DOT_PRODUCT(N_deriv_xi,X_e(:,1))
+            Jac(2,1) = DOT_PRODUCT(N_deriv_xi,X_e(:,2))
+
+            Jac(1,2) = DOT_PRODUCT(N_deriv_eta,X_e(:,1))
+            Jac(2,2) = DOT_PRODUCT(N_deriv_eta,X_e(:,2))
+            
+            detjac = FindDet(Jac,2)
+   
+            return
+
+         end subroutine shape_func_eval2D
 
          subroutine shape_func_deriv3D(xi, eta, zeta, invJac, B)
             

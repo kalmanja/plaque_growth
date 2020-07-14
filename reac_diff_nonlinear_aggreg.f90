@@ -23,13 +23,13 @@ program reac_diff_nonlinear
   INTEGER, ALLOCATABLE :: dofs(:), ipiv(:)
   DOUBLE PRECISION :: N(8), N2D(4),A_e(8,8), B(8,3), Jac(3,3), invJac(3,3), X_e(8,3),X_e_bc(4,3)
   DOUBLE PRECISION :: K_e(8,8),res_e(8),res_exp_e(8,8),neumann_bc_loc(4)
-  DOUBLE PRECISION ::   mono_d,d_mono,diffusion_mono ,c_LDL_ox,c_mono_thresh
+  DOUBLE PRECISION ::   diff_coeff,kai,omega,mu
   DOUBLE PRECISION :: detJac, del_t, t
   DOUBLE PRECISION, ALLOCATABLE :: A_global(:,:), K_global(:,:),res_exp(:,:)
-  DOUBLE PRECISION, ALLOCATABLE :: c_mono_iter_temp(:,:),res_global(:,:),jacobi_iter(:,:),j_iter_inv(:,:)
-  DOUBLE PRECISION, ALLOCATABLE :: c_mono_current(:),c_mono_iter(:),res(:),c_mono_diff(:,:),res_temp(:,:)
-  DOUBLE PRECISION, ALLOCATABLE :: delta_c_mono(:,:),delta_c_mono_temp(:),neumann_bc(:,:)
-  DOUBLE PRECISION :: c_e_mono_iter(8), c_mono_current_gp, newton_tol,err, solute_flux_mono
+  DOUBLE PRECISION, ALLOCATABLE :: c_iter_temp(:,:),res_global(:,:),jacobi_iter(:,:),j_iter_inv(:,:)
+  DOUBLE PRECISION, ALLOCATABLE :: c_current(:),c_iter(:),res(:),c_diff(:,:),res_temp(:,:)
+  DOUBLE PRECISION, ALLOCATABLE :: delta_c(:,:),delta_c_temp(:),neumann_bc(:,:)
+  DOUBLE PRECISION :: c_e_iter(8), c_current_gp, newton_tol,err, solute_flux_mono
   INTEGER :: p,info,iter
   DOUBLE PRECISION, ALLOCATABLE :: work(:)
   integer ( kind = 4 ) output_unit, count
@@ -51,15 +51,15 @@ program reac_diff_nonlinear
   ALLOCATE(j_iter_inv(1:size(node_x,2),1:size(node_x,2)))
   ALLOCATE(res_exp(1:size(node_x,2),1:size(node_x,2)))
   ALLOCATE(dofs(1:size(node_x,2)))
-  ALLOCATE(c_mono_current(1:size(node_x,2)))
-  ALLOCATE(c_mono_iter(1:size(node_x,2)))
+  ALLOCATE(c_current(1:size(node_x,2)))
+  ALLOCATE(c_iter(1:size(node_x,2)))
   ALLOCATE(res_global(1:size(node_x,2),1))
   ALLOCATE(res(1:size(node_x,2)))
   ALLOCATE(res_temp(1:size(dofs),1))
-  ALLOCATE(c_mono_diff(1:size(dofs),1))
-  ALLOCATE(c_mono_iter_temp(1:size(dofs),1))
-  ALLOCATE(delta_c_mono(1:size(dofs),1))
-  ALLOCATE(delta_c_mono_temp(1:size(dofs)))
+  ALLOCATE(c_diff(1:size(dofs),1))
+  ALLOCATE(c_iter_temp(1:size(dofs),1))
+  ALLOCATE(delta_c(1:size(dofs),1))
+  ALLOCATE(delta_c_temp(1:size(dofs)))
   ALLOCATE(ipiv(1:size(dofs)))
   ALLOCATE(work(1:size(dofs)))
   ALLOCATE(neumann_bc(1:size(dofs),1))
@@ -100,7 +100,7 @@ program reac_diff_nonlinear
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!                                Nonlinear systems - monocytes
+!                                Nonlinear systems - aggregation
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  
 
 ! Time step incrementation
@@ -109,8 +109,8 @@ program reac_diff_nonlinear
   nsteps = 10
   t = 0.d0
 
-  c_mono_current = 0.d0
-  c_mono_iter = 0.d0
+  c_current = 0.d0
+  c_iter = 0.d0
 
 
   do n_s = 1, nsteps
@@ -122,10 +122,9 @@ program reac_diff_nonlinear
     print*,'Total time NL = ',t
     print*,'--------------------------'
    
-    
-  ! Apply Neumann BC
-   
   
+  !------------------------------------------------------------------------------------------------------------  
+  ! Apply Neumann BC
   !------------------------------------------------------------------------------------------------------------
   call GaussLegendreQuad(nqp,2,quadrature2D)
 
@@ -140,11 +139,7 @@ program reac_diff_nonlinear
         do j = 1,size(N2D)
           X_e_bc(j,1:3) = node_x(:,bc_face(j,nf))
         end do
-        !print*, X_e_bc(1,1:3)
-        !print*, X_e_bc(2,1:3)
-        !print*, X_e_bc(3,1:3)
-        !print*, X_e_bc(4,1:3)
-        !pause
+
         call shape_func_eval2D(quadrature2D(i,1),quadrature2D(i,2),N2D,X_e_bc,detJac)
 
         neumann_bc_loc = neumann_bc_loc + solute_flux_mono*N2D*quadrature2D(i,3)*detJac
@@ -152,8 +147,7 @@ program reac_diff_nonlinear
       end do
       neumann_bc(node_set_bc,1) = neumann_bc(node_set_bc,1) + neumann_bc_loc(1:4)
   end do
-  !print*,neumann_bc
-  !pause
+
   !------------------------------------------------------------------------------------------------------------
 
 
@@ -180,7 +174,7 @@ program reac_diff_nonlinear
         
         do j = 1,size(N)
           do k = 1,size(N)
-            A_e(j,k) = A_e(j,k) + (1.d0 + mono_d + d_mono)*N(j)*N(k)*detJac*quadrature(i,4)
+            A_e(j,k) = A_e(j,k) + N(j)*N(k)*detJac*quadrature(i,4)
           end do
         end do
 
@@ -209,7 +203,7 @@ program reac_diff_nonlinear
 
     iter = 0
     newton_tol = 1.0e-16
-    c_mono_iter = 0.d0
+    c_iter = 0.d0
     
     err = 100.d0
     do while (err.gt.newton_tol)
@@ -227,7 +221,7 @@ program reac_diff_nonlinear
         res_exp_e = 0.d0
         A_e = 0.d0
         node_set = element_node(:,ne)
-        c_e_mono_iter = c_mono_iter(node_set)
+        c_e_iter = c_iter(node_set)
 
         do i = 1,nqp**3
 
@@ -241,11 +235,11 @@ program reac_diff_nonlinear
           call inverse_Jacobian3D(quadrature(i,1),quadrature(i,2),quadrature(i,3),X_e,Jac,invJac) 
           detJac = FindDet(Jac,3)
 
-          c_mono_current_gp = 0.d0
+          c_current_gp = 0.d0
           do k = 1,size(N)
-            c_mono_current_gp = c_mono_current_gp + N(k)*c_e_mono_iter(k)    
+            c_current_gp = c_current_gp + N(k)*c_e_iter(k)    
           end do
-          res_e = res_e + N*c_mono_current_gp*c_LDL_ox*exp(-0.5*(c_mono_current_gp/c_mono_thresh)**2)&
+          res_e = res_e + N*c_current_gp*c_LDL_ox*exp(-0.5*(c_current_gp/c_mono_thresh)**2)&
                   &*detJac*quadrature(i,4)
 
           ! Calculate A_e = N.N^T
@@ -256,8 +250,8 @@ program reac_diff_nonlinear
             end do
           end do     
 
-          res_exp_e = res_exp_e + c_LDL_ox*exp(-0.5*(c_mono_current_gp/c_mono_thresh)**2)*detJac*quadrature(i,4)&
-                    & *(1.d0 - (c_mono_current_gp**2)/(c_mono_thresh**2))*A_e
+          res_exp_e = res_exp_e + c_LDL_ox*exp(-0.5*(c_current_gp/c_mono_thresh)**2)*detJac*quadrature(i,4)&
+                    & *(1.d0 - (c_current_gp**2)/(c_mono_thresh**2))*A_e
         end do
         
         res(node_set) = res(node_set) + res_e
@@ -267,10 +261,10 @@ program reac_diff_nonlinear
       end do
       res_temp(1:size(node_x,2),1) = res(1:size(node_x,2))
       
-      c_mono_diff(1:size(node_x,2),1) = c_mono_iter(1:size(node_x,2)) - c_mono_current(1:size(node_x,2))
-      c_mono_iter_temp(1:size(node_x,2),1) = c_mono_iter(1:size(node_x,2))
-      res_global = (1.d0/del_t)*matmul(A_global,c_mono_diff) + diffusion_mono *matmul(K_global,c_mono_iter_temp)&
-                    & + (d_mono + mono_d)*matmul(A_global,c_mono_iter_temp) - res_temp - neumann_bc
+      c_diff(1:size(node_x,2),1) = c_iter(1:size(node_x,2)) - c_current(1:size(node_x,2))
+      c_iter_temp(1:size(node_x,2),1) = c_iter(1:size(node_x,2))
+      res_global = (1.d0/del_t)*matmul(A_global,c_diff) + diffusion_mono *matmul(K_global,c_iter_temp)&
+                    & + (d_mono + mono_d)*matmul(A_global,c_iter_temp) - res_temp - neumann_bc
 
       jacobi_iter = ((1.d0/del_t) + d_mono + mono_d)*A_global + diffusion_mono *K_global-res_exp
 
@@ -281,16 +275,16 @@ program reac_diff_nonlinear
       call DGETRF(p,p,j_iter_inv,p,ipiv,info)
       call DGETRI(p,j_iter_inv,p,ipiv,work,p,info)
 
-      delta_c_mono = matmul(j_iter_inv,-1.d0*res_global)
-      delta_c_mono_temp(1:size(node_x,2)) = delta_c_mono(1:size(node_x,2),1)
+      delta_c = matmul(j_iter_inv,-1.d0*res_global)
+      delta_c_temp(1:size(node_x,2)) = delta_c(1:size(node_x,2),1)
 
-      err = DOT_PRODUCT(delta_c_mono_temp,delta_c_mono_temp)
+      err = DOT_PRODUCT(delta_c_temp,delta_c_temp)
 
       print*,err
       !pause
 
-      c_mono_iter_temp = c_mono_iter_temp + delta_c_mono
-      c_mono_iter = c_mono_iter_temp(1:size(node_x,2),1)
+      c_iter_temp = c_iter_temp + delta_c
+      c_iter = c_iter_temp(1:size(node_x,2),1)
 
     end do
     
@@ -300,7 +294,7 @@ program reac_diff_nonlinear
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  
 
-  c_mono_current = c_mono_iter
+  c_current = c_iter
 
   ! print*,''
   ! print*,'C_LDL'
@@ -320,7 +314,7 @@ program reac_diff_nonlinear
     call get_unit ( output_unit )
     open ( unit = output_unit, file = output_filename_mono, status = 'replace' )
     call vtk_puvw_write ( output_unit,'Output', size(node_x,2), size(element_node,2), &
-      8, node_x, element_node, c_mono_current )
+      8, node_x, element_node, c_current )
 
     close (  unit = output_unit )
 
@@ -334,9 +328,9 @@ end do
 !
  DEALLOCATE (element_node, node_x, quadrature)
  DEALLOCATE (A_global,K_global,jacobi_iter,j_iter_inv)
- DEALLOCATE (res_exp,dofs,c_mono_current,c_mono_iter)
- DEALLOCATE (res_global,res,res_temp,c_mono_diff)
- DEALLOCATE (c_mono_iter_temp,delta_c_mono,delta_c_mono_temp)
+ DEALLOCATE (res_exp,dofs,c_current,c_iter)
+ DEALLOCATE (res_global,res,res_temp,c_diff)
+ DEALLOCATE (c_iter_temp,delta_c,delta_c_temp)
  DEALLOCATE (ipiv,work,neumann_bc)
 
 !

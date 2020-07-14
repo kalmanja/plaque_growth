@@ -470,3 +470,50 @@ mdb.Job(activateLoadBalancing=False, atTime=None, contactPrint=OFF,
     resultsFormat=ODB, scratch='', type=ANALYSIS, userSubroutine='', waitHours=
     0, waitMinutes=0)
 # Save by km262911 on 2020_06_23-16.56.44; build 2019 2018_09_24-20.41.51 157541
+from part import *
+from material import *
+from section import *
+from assembly import *
+from step import *
+from interaction import *
+from load import *
+from mesh import *
+from optimization import *
+from job import *
+from sketch import *
+from visualization import *
+from connectorBehavior import *
+mdb.models['Model-1'].parts['Part-1'].deleteMesh()
+mdb.models['Model-1'].parts['Part-1'].seedEdgeByNumber(constraint=FINER, edges=
+    mdb.models['Model-1'].parts['Part-1'].edges.getSequenceFromMask((
+    '[#7986 ]', ), ), number=4)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeByNumber(constraint=FINER, edges=
+    mdb.models['Model-1'].parts['Part-1'].edges.getSequenceFromMask((
+    '[#8430 ]', ), ), number=8)
+mdb.models['Model-1'].parts['Part-1'].generateMesh()
+# Save by km262911 on 2020_06_23-22.32.20; build 2019 2018_09_24-20.41.51 157541
+from part import *
+from material import *
+from section import *
+from assembly import *
+from step import *
+from interaction import *
+from load import *
+from mesh import *
+from optimization import *
+from job import *
+from sketch import *
+from visualization import *
+from connectorBehavior import *
+mdb.models['Model-1'].rootAssembly.regenerate()
+mdb.jobs.changeKey(fromName='nonlinear_reac_diff', toName=
+    'nonlinear_reac_diff2')
+mdb.models['Model-1'].parts['Part-1'].deleteMesh()
+mdb.models['Model-1'].parts['Part-1'].seedEdgeByNumber(constraint=FINER, edges=
+    mdb.models['Model-1'].parts['Part-1'].edges.getSequenceFromMask((
+    '[#7986 ]', ), ), number=8)
+mdb.models['Model-1'].parts['Part-1'].seedEdgeByNumber(constraint=FINER, edges=
+    mdb.models['Model-1'].parts['Part-1'].edges.getSequenceFromMask((
+    '[#8430 ]', ), ), number=16)
+mdb.models['Model-1'].parts['Part-1'].generateMesh()
+# Save by km262911 on 2020_06_24-00.22.25; build 2019 2018_09_24-20.41.51 157541

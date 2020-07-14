@@ -2,7 +2,7 @@
 #
 # Abaqus/CAE Release 2019 replay file
 # Internal Version: 2018_09_24-20.41.51 157541
-# Run by km262911 on Thu Jul  2 15:36:40 2020
+# Run by km262911 on Thu Jul  2 15:30:53 2020
 #
 
 # from driverUtils import executeOnCaeGraphicsStartup
@@ -69,15 +69,14 @@ mdb.ModelFromInputFile(name='BC4',
 #:   237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252,
 #:   253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264
 #: 
+#: 
+#: WARNING: The following keywords/parameters are not yet supported by the input file reader:
+#: ---------------------------------------------------------------------------------
+#: *PREPRINT
 #: The model "BC4" has been imported from an input file. 
 #: Please scroll up to check for error and warning messages.
 session.viewports['Viewport: 1'].assemblyDisplay.setValues(
     optimizationTasks=OFF, geometricRestrictions=OFF, stopConditions=OFF)
-a = mdb.models['BC4'].rootAssembly
-session.viewports['Viewport: 1'].setValues(displayedObject=a)
-a = mdb.models['Model-1'].rootAssembly
-session.viewports['Viewport: 1'].setValues(displayedObject=a)
-del mdb.models['Model-1']
 a = mdb.models['BC4'].rootAssembly
 session.viewports['Viewport: 1'].setValues(displayedObject=a)
 mdb.Job(name='cuboid_BC4', model='BC4', description='', type=ANALYSIS, 
@@ -90,3 +89,8 @@ mdb.Job(name='cuboid_BC4', model='BC4', description='', type=ANALYSIS,
     numCpus=1, numGPUs=0)
 mdb.jobs['cuboid_BC4'].writeInput(consistencyChecking=OFF)
 #: The job input file has been written to "cuboid_BC4.inp".
+p1 = mdb.models['BC4'].parts['PART-1']
+session.viewports['Viewport: 1'].setValues(displayedObject=p1)
+p1 = mdb.models['BC4'].parts['PART-1']
+session.viewports['Viewport: 1'].setValues(displayedObject=p1)
+#: Coordinates of node 10513 :-13.839108,-1.353194,50.
